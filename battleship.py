@@ -10,8 +10,8 @@
 # 'X' for placing and hit battleship
 # ' ' for empty space
 # '-' for missed shot
-
-def add_ship(self, length, coordination, direction):
+class Board:
+    def add_ship(self, length, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
@@ -23,6 +23,7 @@ def add_ship(self, length, coordination, direction):
     def show_result(self):
         """Show visualization of shipList of its own."""
         # Implement the logic to display the shipList in a grid.
+
 
 own_board = OwnBoard()
 own_board.add_ship(4, "1A", "right")
