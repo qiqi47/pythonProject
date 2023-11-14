@@ -10,7 +10,13 @@
 # 'X' for placing and hit battleship
 # ' ' for empty space
 # '-' for missed shot
+
 class Board:
+    def __init__(self):
+        # This initialize board state and shiplist for each instance.
+        self.state = [['']*10 for x in range(10)]
+        self.shipList = {}
+
     def add_ship(self, length, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
@@ -25,6 +31,14 @@ class Board:
         # Implement the logic to display the shipList in a grid.
 
 
-own_board = OwnBoard()
+own_board = Board()
 own_board.add_ship(4, "1A", "right")
 own_board.show_own()
+
+# Get the name of the players
+player1_name = input("Player 1 Name: ")
+player2_name = input("Player 2 Name: ")
+
+# Create player boards
+player1_board = Board()
+player2_board = Board()
