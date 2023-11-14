@@ -33,7 +33,7 @@ class Board:
 
 own_board = Board()
 own_board.add_ship(4, "1A", "right")
-own_board.show_own()
+own_board.show_result()
 
 # Get the name of the players
 player1_name = input("Player 1 Name: ")
