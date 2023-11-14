@@ -14,7 +14,7 @@
 class Board:
     def __init__(self):
         # This initialize board state and shiplist for each instance.
-        self.state = [['']*10 for x in range(10)]
+        self.state = [[' ']*10 for x in range(10)]
         self.shipList = {}
 
     def add_ship(self, length, coordination, direction):
