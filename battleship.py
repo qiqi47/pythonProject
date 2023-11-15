@@ -1,3 +1,5 @@
+#This is Ryo's workplace
+
 # Required class:
 # OwnBoard: Define own board
 # Properties and Methods
