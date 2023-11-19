@@ -18,7 +18,7 @@ class Board:
         self.shipList = {}
 
     def coord_to_index(self, coordination):
-        """Convert coordinate string to row and column indices."""
+        # Convert coordinate string to row and column indices.
         col = ord(coordination[1]) - ord('A')
         row = int(coordination[0]) - 1
         return row, col
@@ -28,15 +28,17 @@ class Board:
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
         row, col = self.coord_to_index(coordination)
-        if direction.lower() == 'right':
-            if col + length > 10:
+        if direction.lower() == 'right':  # if the ship is horizontal
+            if col + length > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
             for i in range(length):
-                if self.state[row][col + i] == 'X':
+                if self.state[row][col + i] == 'X':  # to judge if it is overlap
                     raise ValueError("Ships cannot overlap")
-                self.state[row][col + i] = 'X'
+                self.state[row][col + i] = 'X'  # to note the position
+                # to note the ship is hit or not
                 self.shipList[(row, col + i)] = 'safe'
-        elif direction.lower() == 'down':
+
+        elif direction.lower() == 'down':  # if the ship is vertical
             if row + length > 10:
                 raise ValueError("Ship out of bounds")
             for i in range(length):
