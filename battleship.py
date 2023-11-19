@@ -17,14 +17,45 @@ class Board:
         self.state = [[' ']*10 for x in range(10)]
         self.shipList = {}
 
+    def coord_to_index(self, coordination):
+        """Convert coordinate string to row and column indices."""
+        col = ord(coordination[1]) - ord('A')
+        row = int(coordination[0]) - 1
+        return row, col
+
     def add_ship(self, length, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
+        row, col = self.coord_to_index(coordination)
+        if direction.lower() == 'right':
+            if col + length > 10:
+                raise ValueError("Ship out of bounds")
+            for i in range(length):
+                if self.state[row][col + i] == 'X':
+                    raise ValueError("Ships cannot overlap")
+                self.state[row][col + i] = 'X'
+                self.shipList[(row, col + i)] = 'safe'
+        elif direction.lower() == 'down':
+            if row + length > 10:
+                raise ValueError("Ship out of bounds")
+            for i in range(length):
+                if self.state[row + i][col] == 'X':
+                    raise ValueError("Ships cannot overlap")
+                self.state[row + i][col] = 'X'
+                self.shipList[(row + i, col)] = 'safe'
+        else:
+            raise ValueError("Invalid direction")
 
     def evaluate(self, coordination):
         """Check if the bomb hit or failed, and reflect the condition to shipList."""
         # Implement the logic to check if the opponent's bombardment hit or failed.
+        row, col = self.coord_to_index(coordination)
+        if (row, col) in self.shipList:
+            self.shipList[(row, col)] = 'hit'
+            return 'hit'
+        else:
+            return 'miss'
 
     def show_result(self):
         """Show visualization of shipList of its own."""
