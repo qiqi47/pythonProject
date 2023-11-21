@@ -1,5 +1,3 @@
-#This is Ryo's workplace
-
 # Required class:
 # OwnBoard: Define own board
 # Properties and Methods
@@ -15,71 +13,120 @@
 
 class Board:
     def __init__(self):
-        #This initialize board state and shiplist for each instance.
-        self.state = [['']*10 for x in range(10)] 
-        self.shipList = [[]*5 for x in range(5)] 
-        #Originally there should be 5 ships. Those lists will keep the coordination of each ship and delete coordination 
-        #when the place is bombed. When the list turned empty, the ship is considered to be sunk.
+        # This initialize board state and shiplist for each instance.
+        self.state = [[' ']*10 for x in range(10)]
+        
+        #What about using self.state as a sole source of information?
+        #self.shipList = {}
 
-    def add(self,length of the ship, coordination,direction):
-        """This method add ship to the board according to the coordination. Length of the ship will be 4, 3(x2), 2(x2),1.
-        Player can select one coordination (like 1A), and then can select which way to extend the ship. For example, if
-        the player select "right" for a ship of length 3, coordination will be 1A,1B,1C. Should throw an error if it is 
-        out of bound."""
+    def coord_to_index(self, coordination):
+        # Convert coordinate string to row and column indices.
+        col = ord(coordination[1]) - ord('A')
+        row = int(coordination[0]) - 1
+        return row, col
 
-    def showShipLocation(self):
-        """This method get infromation from board, and shows where the ships are located, and it's condition (hit or not). 
-        This requires some work, because we don't want to print the board state in a form of a list. Rather, it should 
-        show in form of grid.
+    def add_ship(self, length, coordination, direction):
+        """Add a ship to the board according to the coordination and direction.
+        Throw an error if it is out of bound."""
+        # Implement the logic to add a ship to the board.
+        row, col = self.coord_to_index(coordination)
+        if direction.lower() == 'horizontal':  # if the ship is horizontal
+            if col + length > 10:   # to judge if it is out of bound
+                raise ValueError("Ship out of bounds")
+            for i in range(length):
+                if self.state[row][col + i] == 'X':  # to judge if it is overlap
+                    raise ValueError("Ships cannot overlap")
+                self.state[row][col + i] = 'X'  # to note the position
+                # to note the ship is hit or not
+                
+                #As above, my idea now is to concentrate all the information to state board
+                #self.shipList[(row, col + i)] = 'safe'
 
-    def showBoardState(self):
-        """This method get infromation from board, and shows which part of the board is bombed, and if it is a hit or not. 
-        In the game, this method will be used by an opponent."""
+        elif direction.lower() == 'vertical':  # if the ship is vertical
+            if row + length > 10:
+                raise ValueError("Ship out of bounds")
+            for i in range(length):
+                if self.state[row + i][col] == 'X':
+                    raise ValueError("Ships cannot overlap")
+                self.state[row + i][col] = 'X'
+                
+                #same as above
+                #self.shipList[(row + i, col)] = 'safe'
+        else:
+            raise ValueError("Invalid direction")
 
-    def bomb(self, coordination):
-        """This method changes status of the board and shiplist after opponent's bombing"""
+    def evaluate(self, coordination):
+        """Check if the bomb hit or failed, and reflect the condition to shipList."""
+        # Implement the logic to check if the opponent's bombardment hit or failed.
+        row, col = self.coord_to_index(coordination)
+        
+        if self.state[row][col] == "@" or self.state[row][col] == "V":
+            raise ValueError("You can't bomb same place again")
+        
+        elif self.state[row][col] == "X":
+            #Mark as hit with "@"
+            self.state[row][col] == "@"
+            return 'hit'
+            
+        else:
+            #Mark the cell with "V" as miss. "V" because it looks like water splash.
+            self.state[row][col] == "V"
+            return 'miss'      
+        #if (row, col) in self.shipList:
+            #self.shipList[(row, col)] = 'hit'
+            #return 'hit'
+        #else:
+            #return 'miss'
 
-#Following is the structure of the game that I imagine.
+    def own_Condition(self):
+        """This method visualizes location of your ships and their conditions"""
+        
+        board_map = "  A B C D E F G H I J\n"
+        #Double for loop, but limited to 100 checks. No issue. 
+        for i in range(10):
+            row = ""
+            for j in range(10):
+                #Copy location of ship not bombed
+                if self.state[i][j] == "X":
+                    row += "X"
+                #Copy location of ship hit
+                elif self.state[i][j] == "@":
+                    row += "@"
+                else:
+                    row += ' '
+            #Adding row number, separator and append to board_map
+            board_map += str(i) + "|" + "|".join(row) + "|\n"
+        
+        print(board_map) 
+                     
+    def opponent_Condition(self):
+        """This method visualizes location of your hit / not hit"""
+        
+        board_map = "  A B C D E F G H I J\n"
+        for i in range(10):
+            row = ""
+            for j in range(10):
+                if self.state[i][j] == "@":
+                    row += "@"
+                elif self.state[i][j] == "V":
+                    row += "V"
+                else:
+                    row += ' '
+            #Adding row number, separator and append to board_map
+            board_map += str(i) + "|" + "|".join(row) + "|\n"
+        
+        print(board_map) 
 
-#Get the name of the player 1 and 2 (Maybe not necessary).
-x = input(Player1_name)
-y = input(Player2_name)
+        
+        
+own_board = Board()
+own_board.add_ship(4, "1A", "right")
+own_board.show_result()
 
-while(player 1 and player 2 haven't set their status):
-    while(player 1 haven't set the ships):
-        #player 1 can add ship, and see own map.
+# Get the name of the players
+player1_name = input("Player 1 Name: ")
+player2_name = input("Player 2 Name: ")
 
-    while(player 2 haven't set the ships):
-        #player 2 can add ship, and see own map.
-
-#Setting part is over, real game starts
-
-while (player 1 and player 2 have ship):
-    while(player 1 haven't finished bombing):
-        #player 1 can see own ship, opponent's hit-map, or bomb certain location
-    while(player 2 haven't finished bombing):
-        #player 2 can see own ship, opponent's hit-map, or bomb certain location
-
-print(player X wins)
-
-
--------------------------------------------------------------------------------------------------------------------------------
-"""I think we are sharing the same idea, but my idea is to implement the board as a class so it will be more concise. 
-ShipList will be a property of the class""" 
-
-from random import randint
-
-HIDDEN_BOARD = [[' ']*10 for x in range(10)] # computer board
-OWN_BOARD =  [[' ']*10 for x in range(10)] # player board
-
-ShipList = {}
-
-def create_ships(board):
-    for ship in range(5):
-        ship_row, ship_column = randint(0,9),randint(0,9)
-        ShipList[ship_column] = ship_row
-
-def ShowList(board):
-    
-
-
+# Create player boards
+player1_board = Board()
+player2_board = Board()
