@@ -88,13 +88,13 @@ class Board:
             #return 'miss'
             
     def sink_Evaluation(self):
-        #check each ship of shipList dictionary
-        for ship in self.shipList:
-            #If the list is empty after attack, that means the ship sunk.
-            if list.value == []:
-                print(f'{list.key} sunk.')
-                #Delete sunk ship from the shipList
-                del self.shipList[list.key]
+        # check each ship of shipList dictionary
+        for ship_key, ship_value in self.shipList.items():
+            # If the list is empty after attack, that means the ship sunk.
+            if ship_value == []:
+                print(f'{ship_key} sunk.')
+                # Delete sunk ship from the shipList
+                del self.shipList[ship_key]
                 break
         return
         
