@@ -1,21 +1,13 @@
-# Required class:
-# OwnBoard: Define own board
-# Properties and Methods
-# ShipList: property that stores the location of ship, and its condition (safe or hit)
-# HitList: property that stores the location of enemy bombardment, and the condition (hit or miss)
-# Add: method that add ship to the board
-# Evaluate: method that checks if the opponent’s bombardment hit or failed, reflect the condition to ShipList and HitList
-# ShowOwn: Show visualization of ShipList of its own.
-# ShowOpponent: Show HitList of the opponent.
-# 'X' for placing and hit battleship
-# ' ' for empty space
-# '-' for missed shot
-
 class Board:
     def __init__(self):
         # This initialize board state and shiplist for each instance.
         self.state = [[' ']*10 for x in range(10)]
-        self.shipList = {}
+        self.shipList = {"battleship": ['', '', '', '', ''],
+                         "cruiser1": ['', '', ''],
+                         "cruiser2": ['', '', ''],
+                         "destroyer1": ['', ''],
+                         "destroyer2": ['', ''],
+                         }
 
     def coord_to_index(self, coordination):
         # Convert coordinate string to row and column indices.
@@ -28,7 +20,7 @@ class Board:
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
         row, col = self.coord_to_index(coordination)
-        if direction.lower() == 'right':  # if the ship is horizontal
+        if direction.lower() == 'horizontal':  # if the ship is horizontal
             if col + length > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
             for i in range(length):
@@ -36,32 +28,110 @@ class Board:
                     raise ValueError("Ships cannot overlap")
                 self.state[row][col + i] = 'X'  # to note the position
                 # to note the ship is hit or not
-                self.shipList[(row, col + i)] = 'safe'
 
-        elif direction.lower() == 'down':  # if the ship is vertical
+                """I will construct this part in the main body, so the coordination of
+                each ship will be recorded in self.shipList"""
+                # self.shipList[(row, col + i)] = 'safe'
+
+        elif direction.lower() == 'vertical':  # if the ship is vertical
             if row + length > 10:
                 raise ValueError("Ship out of bounds")
             for i in range(length):
                 if self.state[row + i][col] == 'X':
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
-                self.shipList[(row + i, col)] = 'safe'
+
+                # same as above
+                # self.shipList[(row + i, col)] = 'safe'
         else:
             raise ValueError("Invalid direction")
+        return
 
     def evaluate(self, coordination):
-        """Check if the bomb hit or failed, and reflect the condition to shipList."""
+        """Check if the bomb hit or failed, and reflect the condition to shipList. 
+        Intact ship is "X" and Intact """
         # Implement the logic to check if the opponent's bombardment hit or failed.
         row, col = self.coord_to_index(coordination)
-        if (row, col) in self.shipList:
-            self.shipList[(row, col)] = 'hit'
+
+        if self.state[row][col] == "@" or self.state[row][col] == "V":
+            raise ValueError("You can't bomb same place again")
+
+        elif self.state[row][col] == "X":
+            # Mark as hit with "@"
+            self.state[row][col] = "@"
+
+            # Record hit in shipList
+            for list in self.shipList.values():
+                """check each list and remove hit coordination. 
+                Only empty list will remain if all part of a ship is hit."""
+                if coordination in list:
+                    list.remove(coordination)
+
             return 'hit'
+
         else:
+            # Mark the cell with "V" as miss. "V" because it looks like water splash.
+            self.state[row][col] == "V"
             return 'miss'
 
-    def show_result(self):
-        """Show visualization of shipList of its own."""
-        # Implement the logic to display the shipList in a grid.
+        # if (row, col) in self.shipList:
+            # self.shipList[(row, col)] = 'hit'
+            # return 'hit'
+        # else:
+            # return 'miss'
+
+    def sink_Evaluation(self):
+        # check each ship of shipList dictionary
+        for ship in self.shipList:
+            # If the list is empty after attack, that means the ship sunk.
+            if list.value == []:
+                print(f'{list.key} sunk.')
+                # Delete sunk ship from the shipList
+                del self.shipList[list.key]
+                break
+        return
+
+    def own_Condition(self):
+        """This method visualizes location of your ships and their conditions. Hit is
+        '@', and miss is 'V'. """
+
+        board_map = "  A B C D E F G H I J\n"
+        # Double for loop, but limited to 100 checks. No issue.
+        for i in range(10):
+            row = ""
+            for j in range(10):
+                # Copy location of ship not bombed
+                if self.state[i][j] == "X":
+                    row += "X"
+                # Copy location of ship hit
+                elif self.state[i][j] == "@":
+                    row += "@"
+                else:
+                    row += ' '
+            # Adding row number, separator and append to board_map
+            board_map += str(i+1) + "|" + "|".join(row) + "|\n"
+
+        print(board_map)
+        return
+
+    def opponent_Condition(self):
+        """This method visualizes location of your hit / not hit"""
+
+        board_map = "  A B C D E F G H I J\n"
+        for i in range(10):
+            row = ""
+            for j in range(10):
+                if self.state[i][j] == "@":
+                    row += "@"
+                elif self.state[i][j] == "V":
+                    row += "V"
+                else:
+                    row += ' '
+            # Adding row number, separator and append to board_map
+            board_map += str(i+1) + "|" + "|".join(row) + "|\n"
+
+        print(board_map)
+        return
 
 
 own_board = Board()
