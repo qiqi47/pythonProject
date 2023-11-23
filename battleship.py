@@ -58,7 +58,7 @@ class Board:
         
         elif self.state[row][col] == "X":
             #Mark as hit with "@"
-            self.state[row][col] == "@"
+            self.state[row][col] = "@"
             
             #Record hit in shipList
             for list in self.shipList.values():
@@ -71,7 +71,7 @@ class Board:
             
         else:
             #Mark the cell with "V" as miss. "V" because it looks like water splash.
-            self.state[row][col] == "V"
+            self.state[row][col] = "V"
             return 'miss'      
         
         #if (row, col) in self.shipList:
