@@ -1,6 +1,6 @@
 class Board:
     def __init__(self):
-        # This initialize board state and shiplist for each instance.
+        # This initialize board state and shipList for each instance.
         self.state = [[' ']*10 for x in range(10)]
         self.shipList = {"battleship":['','','','',''],
                          "cruiser1":['','',''],
@@ -8,12 +8,20 @@ class Board:
                          "destroyer1":['',''],
                          "destroyer2":['',''],
                         }
+        #Keep track of number of ship on board
+        self.shipNum = 0
 
     def coord_to_index(self, coordination):
         # Convert coordinate string to row and column indices.
-        col = ord(coordination[1]) - ord('A')
-        row = int(coordination[0]) - 1
-        return row, col
+        #Check the length of the coordination input.
+        if len(coordination) != 2:
+            raise ValueError("Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+        elif coordination[1] < 65 or coordination[1] > 74 or int(coordination[0]) < 1 or int(coordination[0]) > 10:
+            raise ValueError("Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+        else:
+            col = ord(coordination[1]) - ord('A')
+            row = int(coordination[0]) - 1
+            return row, col
 
     def add_ship(self, length, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
@@ -40,7 +48,6 @@ class Board:
                 if self.state[row + i][col] == 'X':
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
-                
                 #same as above
                 #self.shipList[(row + i, col)] = 'safe'
         else:
@@ -58,7 +65,7 @@ class Board:
         
         elif self.state[row][col] == "X":
             #Mark as hit with "@"
-            self.state[row][col] == "@"
+            self.state[row][col] = "@"
             
             #Record hit in shipList
             for list in self.shipList.values():
@@ -71,7 +78,7 @@ class Board:
             
         else:
             #Mark the cell with "V" as miss. "V" because it looks like water splash.
-            self.state[row][col] == "V"
+            self.state[row][col] = "V"
             return 'miss'      
         
         #if (row, col) in self.shipList:
@@ -91,7 +98,6 @@ class Board:
                 break
         return
         
-
     def own_Condition(self):
         """This method visualizes location of your ships and their conditions. Hit is
         '@', and miss is 'V'. """
@@ -134,12 +140,6 @@ class Board:
         print(board_map)
         return
 
-        
-        
-own_board = Board()
-own_board.add_ship(4, "1A", "right")
-own_board.show_result()
-
 # Get the name of the players
 player1_name = input("Player 1 Name: ")
 player2_name = input("Player 2 Name: ")
@@ -147,3 +147,30 @@ player2_name = input("Player 2 Name: ")
 # Create player boards
 player1_board = Board()
 player2_board = Board()
+
+print(f'{player1_name}s turn. Hand device to {player1_name}.')
+
+#Create flags
+player1_set = False
+player2_set = False
+
+while player1_set == False:
+    status1 = input(f'''{player1_name}'s turn. Type in one of following commands:
+                            set = Set your ship. You have 5 ships.
+                            view = view the current status of your map. \"X\" is the location of your ship.''')
+    
+    if status1.lower == "set":
+        shipName = player1_board.shipList[player1_board.shipNum].key
+        shipLength = player1_board.shipList[player1_board.shipNum].value
+        print(f'Place your {shipName}. Length is {shipLength}.')
+        loc = input(f'''Input the coordination for the left edge of your {shipName}.
+                        Coordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).''')
+        direction = input(f'Input which direction you would like to stretch your ship (option: vertical or horizontal).')
+        
+        try:
+            player1_board.add_ship(shipLength,loc,direction)
+            print(f'{shipName} successfully added.')
+            player1_board.shipNum += 1
+            
+        except ValueError as msg:
+            print(msg)
