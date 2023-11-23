@@ -1,3 +1,5 @@
+import os
+
 class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
@@ -23,7 +25,7 @@ class Board:
             row = int(coordination[0]) - 1
             return row, col
 
-    def add_ship(self, length, coordination, direction):
+    def add_ship(self,name, length, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
@@ -34,13 +36,11 @@ class Board:
             for i in range(length):
                 if self.state[row][col + i] == 'X':  # to judge if it is overlap
                     raise ValueError("Ships cannot overlap")
-                self.state[row][col + i] = 'X'  # to note the position
-                # to note the ship is hit or not
+                self.state[row][col + i] = 'X'
                 
-                """I will construct this part in the main body, so the coordination of
-                each ship will be recorded in self.shipList"""
-                #self.shipList[(row, col + i)] = 'safe'
-
+                # Adding coordination information to shipList in each iteration.
+                self.shipList(name)[i]=(str(row+1) + str(chr(col + i)))
+                
         elif direction.lower() == 'vertical':  # if the ship is vertical
             if row + length > 10:
                 raise ValueError("Ship out of bounds")
@@ -48,8 +48,7 @@ class Board:
                 if self.state[row + i][col] == 'X':
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
-                #same as above
-                #self.shipList[(row + i, col)] = 'safe'
+                self.shipList(name)[i]=(str(row + 1 + i) + str(chr(col)))
         else:
             raise ValueError("Invalid direction")
         return
@@ -168,9 +167,39 @@ while player1_set == False:
         direction = input(f'Input which direction you would like to stretch your ship (option: vertical or horizontal).')
         
         try:
-            player1_board.add_ship(shipLength,loc,direction)
+            player1_board.add_ship(shipName,shipLength,loc,direction)
             print(f'{shipName} successfully added.')
             player1_board.shipNum += 1
+            
+            if player1_board.shipNum == 5:
+                player1_set == True
+            
+        except ValueError as msg:
+            print(msg)
+            
+input(f'{player1_name} completed the setting. Press enter to clear screen and hand the terminal to {player2_name}.')
+os.system('cls')
+
+while player2_set == False:
+    status2 = input(f'''{player2_name}'s turn. Type in one of following commands:
+                            set = Set your ship. You have 5 ships.
+                            view = view the current status of your map. \"X\" is the location of your ship.''')
+    
+    if status1.lower == "set":
+        shipName = player2_board.shipList[player2_board.shipNum].key
+        shipLength = player2_board.shipList[player2_board.shipNum].value
+        print(f'Place your {shipName}. Length is {shipLength}.')
+        loc = input(f'''Input the coordination for the left edge of your {shipName}.
+                        Coordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).''')
+        direction = input(f'Input which direction you would like to stretch your ship (option: vertical or horizontal).')
+        
+        try:
+            player2_board.add_ship(shipName,shipLength,loc,direction)
+            print(f'{shipName} successfully added.')
+            player2_board.shipNum += 1
+            
+            if player2_board.shipNum == 5:
+                player2_set == True
             
         except ValueError as msg:
             print(msg)
