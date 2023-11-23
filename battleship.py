@@ -71,7 +71,7 @@ class Board:
 
         else:
             # Mark the cell with "V" as miss. "V" because it looks like water splash.
-            self.state[row][col] == "V"
+            self.state[row][col] = "V"
             return 'miss'
 
         # if (row, col) in self.shipList:
