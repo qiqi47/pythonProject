@@ -152,6 +152,22 @@ class Board:
         print(board_map)
         return
 
+    def bomb_ship(self, opponent_board):
+        """Take input from the player for bombing and update the board."""
+        while True:
+            try:
+                coord = input("Enter coordinates to bomb (e.g., 1A): ")
+                result = opponent_board.evaluate(coord)
+                print(result)
+
+                if result == 'hit':
+                    self.sink_Evaluation()
+
+                opponent_board.opponent_Condition()
+                break
+            except ValueError as msg:
+                print(msg)
+
 
 # Get the name of the players
 player1_name = input("Player 1 Name: ")
@@ -227,3 +243,26 @@ while player2_set == False:
 
     if status2.lower() == "view":
         player2_board.own_Condition()
+
+while True:
+    print(f"{player1_name}'s turn.")
+    player1_board.bomb_ship(player2_board)
+
+    # Check if player 1 has won
+    if not player2_board.shipList:
+        print(f"{player1_name} has bombed all the ships. {player1_name} wins!")
+        break
+
+    input("Press enter to clear the screen and hand the terminal to Player 2.")
+    os.system('clear')
+
+    print(f"{player2_name}'s turn.")
+    player2_board.bomb_ship(player1_board)
+
+    # Check if player 2 has won
+    if not player1_board.shipList:
+        print(f"{player2_name} has bombed all the ships. {player2_name} wins!")
+        break
+
+    input("Press enter to clear the screen and hand the terminal to Player 1.")
+    os.system('clear')
