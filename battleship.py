@@ -1,37 +1,40 @@
 import os
 
+
 class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
         self.state = [[' ']*10 for x in range(10)]
-        self.shipList = {"battleship":['','','','',''],
-                         "cruiser1":['','',''],
-                         "cruiser2":['','',''],
-                         "destroyer1":['',''],
-                         "destroyer2":['',''],
-                        }
-        #Keep track of number of ship on board
+        self.shipList = {"battleship": ['', '', '', '', ''],
+                         "cruiser1": ['', '', ''],
+                         "cruiser2": ['', '', ''],
+                         "destroyer1": ['', ''],
+                         "destroyer2": ['', ''],
+                         }
+        # Keep track of number of ship on board
         self.shipNum = 0
 
     def coord_to_index(self, coordination):
         # Convert coordinate string to row and column indices.
-        #Check the length of the coordination input.
+        # Check the length of the coordination input.
         if len(coordination) != 2:
-            raise ValueError("Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
-        #Check if input falls in 1-9, A-J limit.
+            raise ValueError(
+                "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+        # Check if input falls in 1-9, A-J limit.
         elif int(ord(coordination[1])) < 65 or int(ord(coordination[1])) > 74 or int(coordination[0]) < 1 or int(coordination[0]) > 10:
-            raise ValueError("Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+            raise ValueError(
+                "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
         else:
             col = ord(coordination[1]) - ord('A')
             row = int(coordination[0]) - 1
             return row, col
 
-    #Added parameter "name" to send info to shipList
-    def add_ship(self,name,length,coordination,direction):
+    # Added parameter "name" to send info to shipList
+    def add_ship(self, name, length, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
-        row, col = self.coord_to_index(coordination) 
+        row, col = self.coord_to_index(coordination)
         if direction.lower() == 'horizontal':  # if the ship is horizontal
             if col + length > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
@@ -39,10 +42,10 @@ class Board:
                 if self.state[row][col + i] == 'X':  # to judge if it is overlap
                     raise ValueError("Ships cannot overlap")
                 self.state[row][col + i] = 'X'
-                
+
                 # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i]=(str(row+1) + str(chr(col + i)))
-                
+                self.shipList[name][i] = (str(row+1) + str(chr(col + i)))
+
         elif direction.lower() == 'vertical':  # if the ship is vertical
             if row + length > 10:
                 raise ValueError("Ship out of bounds")
@@ -51,7 +54,7 @@ class Board:
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
                 # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i]=(str(row + 1 + i) + str(chr(col)))
+                self.shipList[name][i] = (str(row + 1 + i) + str(chr(col)))
         else:
             raise ValueError("Invalid direction")
         return
@@ -61,34 +64,34 @@ class Board:
         Intact ship is "X" and Intact """
         # Implement the logic to check if the opponent's bombardment hit or failed.
         row, col = self.coord_to_index(coordination)
-        
+
         if self.state[row][col] == "@" or self.state[row][col] == "V":
             raise ValueError("You can't bomb same place again")
-        
+
         elif self.state[row][col] == "X":
-            #Mark as hit with "@"
+            # Mark as hit with "@"
             self.state[row][col] = "@"
-            
-            #Record hit in shipList
+
+            # Record hit in shipList
             for list in self.shipList.values():
                 """check each list and remove hit coordination. 
                 Only empty list will remain if all part of a ship is hit."""
                 if coordination in list:
                     list.remove(coordination)
-                 
+
             return 'hit'
-            
+
         else:
-            #Mark the cell with "V" as miss. "V" because it looks like water splash.
+            # Mark the cell with "V" as miss. "V" because it looks like water splash.
             self.state[row][col] = "V"
-            return 'miss'      
-        
-        #if (row, col) in self.shipList:
-            #self.shipList[(row, col)] = 'hit'
-            #return 'hit'
-        #else:
-            #return 'miss'
-            
+            return 'miss'
+
+        # if (row, col) in self.shipList:
+            # self.shipList[(row, col)] = 'hit'
+            # return 'hit'
+        # else:
+            # return 'miss'
+
     def sink_Evaluation(self):
         # check each ship of shipList dictionary
         for ship_key, ship_value in self.shipList.items():
@@ -99,36 +102,36 @@ class Board:
                 del self.shipList[ship_key]
                 break
         return
-        
+
     def own_Condition(self):
         """This method visualizes location of your ships and their conditions. Hit is
         '@', and miss is 'V'. """
-        
+
         board_map = "   A B C D E F G H I J\n"
-        #Double for loop, but limited to 100 checks. No issue. 
+        # Double for loop, but limited to 100 checks. No issue.
         for i in range(10):
             row = ""
             for j in range(10):
-                #Copy location of ship not bombed
+                # Copy location of ship not bombed
                 if self.state[i][j] == "X":
                     row += "X"
-                #Copy location of ship hit
+                # Copy location of ship hit
                 elif self.state[i][j] == "@":
                     row += "@"
                 else:
                     row += ' '
-            #Adding row number, separator and append to board_map
-            if i+1<10:
+            # Adding row number, separator and append to board_map
+            if i+1 < 10:
                 board_map += str(i+1) + " |" + "|".join(row) + "|\n"
             else:
                 board_map += str(i+1) + "|" + "|".join(row) + "|\n"
-        
+
         print(board_map)
         return
-                     
+
     def opponent_Condition(self):
         """This method visualizes location of your hit / not hit"""
-        
+
         board_map = "  A B C D E F G H I J\n"
         for i in range(10):
             row = ""
@@ -139,16 +142,16 @@ class Board:
                     row += "V"
                 else:
                     row += ' '
-            #Adding row number, separator and append to board_map
-            
-            if i+1<10:
+            # Adding row number, separator and append to board_map
+
+            if i+1 < 10:
                 board_map += str(i+1) + " |" + "|".join(row) + "|\n"
             else:
                 board_map += str(i+1) + "|" + "|".join(row) + "|\n"
 
-                
         print(board_map)
         return
+
 
 # Get the name of the players
 player1_name = input("Player 1 Name: ")
@@ -160,7 +163,7 @@ player2_board = Board()
 
 print(f'{player1_name}\'s turn. Hand device to {player1_name}.')
 
-#Create flags
+# Create flags
 player1_set = False
 player2_set = False
 
@@ -168,55 +171,59 @@ while player1_set == False:
     status1 = input('''Type in one of following commands:
     set = Set your ship. You have 5 ships.
     view = view the current status of your map. \"X\" is the location of your ship.\n''')
-                    
+
     if status1.lower() == "set":
         shipName = list(player1_board.shipList)[player1_board.shipNum]
         shipLength = len(player1_board.shipList[shipName])
         print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
-        loc = input(f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-        direction = input('Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-        
+        loc = input(
+            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+        direction = input(
+            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+
         try:
-            player1_board.add_ship(shipName,shipLength,loc,direction)
+            player1_board.add_ship(shipName, shipLength, loc, direction)
             print(f'\n{shipName} successfully added.\n')
             player1_board.shipNum += 1
-            
+
             if player1_board.shipNum == 5:
                 player1_set = True
-            
+
         except ValueError as msg:
             print(msg)
-            
+
     if status1.lower() == "view":
         player1_board.own_Condition()
-            
+
 input(f'{player1_name} completed the setting. Press enter to clear screen and hand the terminal to {player2_name}.')
 
-#Clear screen. Should work well in terminal (not tested yet). Another idea is to print multiple empty lines.
+# Clear screen. Should work well in terminal (not tested yet). Another idea is to print multiple empty lines.
 os.system('clear')
 
 while player2_set == False:
     status2 = input('''Type in one of following commands:
     set = Set your ship. You have 5 ships.
     view = view the current status of your map. \"X\" is the location of your ship.\n''')
-                    
+
     if status2.lower() == "set":
         shipName = list(player2_board.shipList)[player2_board.shipNum]
         shipLength = len(player2_board.shipList[shipName])
         print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
-        loc = input(f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-        direction = input('Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-        
+        loc = input(
+            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+        direction = input(
+            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+
         try:
-            player2_board.add_ship(shipName,shipLength,loc,direction)
+            player2_board.add_ship(shipName, shipLength, loc, direction)
             print(f'\n{shipName} successfully added.\n')
             player2_board.shipNum += 1
-            
+
             if player2_board.shipNum == 5:
                 player2_set = True
-            
+
         except ValueError as msg:
             print(msg)
-            
-    if status1.lower() == "view":
-        player1_board.own_Condition()
+
+    if status2.lower() == "view":
+        player2_board.own_Condition()
