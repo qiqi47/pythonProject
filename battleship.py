@@ -184,32 +184,30 @@ player1_set = False
 player2_set = False
 
 while player1_set == False:
-    status1 = input('''Type in one of following commands:
-    set = Set your ship. You have 5 ships.
-    view = view the current status of your map. \"X\" is the location of your ship.\n''')
+    shipName = list(player1_board.shipList)[player1_board.shipNum]
+    shipLength = len(player1_board.shipList[shipName])
 
-    if status1.lower() == "set":
-        shipName = list(player1_board.shipList)[player1_board.shipNum]
-        shipLength = len(player1_board.shipList[shipName])
-        print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
-        loc = input(
-            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-        direction = input(
-            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+    print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
-        try:
-            player1_board.add_ship(shipName, shipLength, loc, direction)
-            print(f'\n{shipName} successfully added.\n')
-            player1_board.shipNum += 1
+    loc = input(
+        f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+    direction = input(
+        'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
 
-            if player1_board.shipNum == 5:
-                player1_set = True
+    try:
+        player1_board.add_ship(shipName, shipLength, loc, direction)
+        print(f'\n{shipName} successfully added.\n')
+        print("Following is the current condition of your map:\n")
 
-        except ValueError as msg:
-            print(msg)
-
-    if status1.lower() == "view":
         player1_board.own_Condition()
+
+        player1_board.shipNum += 1
+
+        if player1_board.shipNum == 5:
+            player1_set = True
+
+    except ValueError as msg:
+        print(msg)
 
 input(f'{player1_name} completed the setting. Press enter to clear screen and hand the terminal to {player2_name}.')
 
@@ -217,32 +215,30 @@ input(f'{player1_name} completed the setting. Press enter to clear screen and ha
 os.system('clear')
 
 while player2_set == False:
-    status2 = input('''Type in one of following commands:
-    set = Set your ship. You have 5 ships.
-    view = view the current status of your map. \"X\" is the location of your ship.\n''')
+    shipName = list(player2_board.shipList)[player2_board.shipNum]
+    shipLength = len(player2_board.shipList[shipName])
 
-    if status2.lower() == "set":
-        shipName = list(player2_board.shipList)[player2_board.shipNum]
-        shipLength = len(player2_board.shipList[shipName])
-        print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
-        loc = input(
-            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-        direction = input(
-            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+    print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
-        try:
-            player2_board.add_ship(shipName, shipLength, loc, direction)
-            print(f'\n{shipName} successfully added.\n')
-            player2_board.shipNum += 1
+    loc = input(
+        f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+    direction = input(
+        'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
 
-            if player2_board.shipNum == 5:
-                player2_set = True
+    try:
+        player2_board.add_ship(shipName, shipLength, loc, direction)
+        print(f'\n{shipName} successfully added.\n')
+        print("Following is the current condition of your map:\n")
 
-        except ValueError as msg:
-            print(msg)
-
-    if status2.lower() == "view":
         player2_board.own_Condition()
+
+        player2_board.shipNum += 1
+
+        if player2_board.shipNum == 5:
+            player2_set = True
+
+    except ValueError as msg:
+        print(msg)
 
 while True:
     print(f"{player1_name}'s turn.")
