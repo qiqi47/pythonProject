@@ -78,7 +78,6 @@ class Board:
                 Only empty list will remain if all part of a ship is hit."""
                 if coordination in list:
                     list.remove(coordination)
-
             return 'hit'
 
         else:
