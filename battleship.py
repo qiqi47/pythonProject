@@ -154,6 +154,14 @@ class Board:
         """Take input from the player for bombing and update the board."""
         while True:
             try:
+                # Display own map
+                print("\nYour board:")
+                self.own_Condition()
+
+                # Display opponent's map
+                print("Opponent's board:")
+                opponent_board.opponent_Condition()
+
                 coord = input("Enter coordinates to bomb (e.g., 1A): ")
                 result = opponent_board.evaluate(coord)
                 print(result)
