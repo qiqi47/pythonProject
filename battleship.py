@@ -1,10 +1,11 @@
 import os
 
+
 class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
         self.state = [[' ']*10 for x in range(10)]
-        self.shipList = {"destroyer1": ['', ''],"destroyer2": ['', '']}
+        self.shipList = {"destroyer1": ['', ''], "destroyer2": ['', '']}
         # Keep track of number of ship on board
         self.shipNum = 0
 
@@ -29,7 +30,6 @@ class Board:
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
         row, col = self.coord_to_index(coordination)
-        
         if direction.lower() == 'horizontal':  # if the ship is horizontal
             if col + length > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
@@ -91,7 +91,8 @@ class Board:
         for ship_key, ship_value in self.shipList.items():
             # If the list is empty after attack, that means the ship sunk.
             if ship_value == []:
-                print(f'Opponent {ship_key} sunk. Inform the opponent about it.')
+                print(
+                    f'Opponent {ship_key} sunk. Inform the opponent about it.')
                 # Delete sunk ship from the shipList
                 del self.shipList[ship_key]
                 break
@@ -109,9 +110,12 @@ class Board:
                 # Copy location of ship not bombed
                 if self.state[i][j] == "X":
                     row += "X"
-                # Copy location of ship hit
+                # show the location of ship opponent hit
                 elif self.state[i][j] == "@":
                     row += "@"
+                # show the location of ship opponent missed
+                elif self.state[i][j] == "V":
+                    row += "V"
                 else:
                     row += ' '
             # Adding row number, separator and append to board_map
@@ -156,7 +160,11 @@ class Board:
 
                 if result == 'hit':
                     self.sink_Evaluation()
+                print("Your board:")
+                self.own_Condition()
 
+                # Print the opponent's board condition
+                print("Opponent's board:")
                 opponent_board.opponent_Condition()
                 break
             except ValueError as msg:
@@ -183,12 +191,15 @@ while player1_set == False:
 
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
-    loc = input(
-        f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-    direction = input(
-        'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-
     try:
+        loc = input(
+            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+        # Validate coordinates here
+        player1_board.coord_to_index(loc)
+
+        direction = input(
+            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+
         player1_board.add_ship(shipName, shipLength, loc, direction)
         print(f'\n{shipName} successfully added.\n')
         print("Following is the current condition of your map:\n")
@@ -213,12 +224,12 @@ while player2_set == False:
 
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
-    loc = input(
-        f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-    direction = input(
-        'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-
     try:
+
+        loc = input(
+            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+        direction = input(
+            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
         player2_board.add_ship(shipName, shipLength, loc, direction)
         print(f'\n{shipName} successfully added.\n')
         print("Following is the current condition of your map:\n")
@@ -231,7 +242,6 @@ while player2_set == False:
 
     except ValueError as msg:
         print(msg)
-        
 input(f'{player2_name} completed the setting. Press enter to clear screen and hand the terminal to {player1_name}.')
 
 # Clear screen. Should work well in terminal (not tested yet). Another idea is to print multiple empty lines.
@@ -241,7 +251,6 @@ print("Let's start the game!")
 while True:
     print(f"{player1_name}'s turn.")
     player1_board.bomb_ship(player2_board)
-    
     player2_board.sink_Evaluation()
 
     # Check if player 1 has won
@@ -254,7 +263,6 @@ while True:
 
     print(f"{player2_name}'s turn.")
     player2_board.bomb_ship(player1_board)
-    
     player1_board.sink_Evaluation()
 
     # Check if player 2 has won
