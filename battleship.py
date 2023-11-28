@@ -1,6 +1,5 @@
 import os
 
-
 class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
@@ -30,6 +29,7 @@ class Board:
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
         row, col = self.coord_to_index(coordination)
+        
         if direction.lower() == 'horizontal':  # if the ship is horizontal
             if col + length > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
@@ -39,7 +39,7 @@ class Board:
                 self.state[row][col + i] = 'X'
 
                 # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i] = (str(row+1) + str(chr(col + i)))
+                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))
 
         elif direction.lower() == 'vertical':  # if the ship is vertical
             if row + length > 10:
@@ -68,11 +68,11 @@ class Board:
             self.state[row][col] = "@"
 
             # Record hit in shipList
-            for list in self.shipList.values():
+            for location in self.shipList.values():
                 """check each list and remove hit coordination. 
                 Only empty list will remain if all part of a ship is hit."""
-                if coordination in list:
-                    list.remove(coordination)
+                if coordination in location:
+                    location.remove(coordination)
             return 'hit'
 
         else:
@@ -91,7 +91,7 @@ class Board:
         for ship_key, ship_value in self.shipList.items():
             # If the list is empty after attack, that means the ship sunk.
             if ship_value == []:
-                print(f'{ship_key} sunk.')
+                print(f'Opponent {ship_key} sunk. Inform the opponent about it.')
                 # Delete sunk ship from the shipList
                 del self.shipList[ship_key]
                 break
@@ -194,7 +194,7 @@ while player1_set == False:
         print("Following is the current condition of your map:\n")
 
         player1_board.own_Condition()
-
+        print(player1_board.shipList.items())
         player1_board.shipNum += 1
 
         if player1_board.shipNum == 2:
@@ -225,7 +225,7 @@ while player2_set == False:
         print("Following is the current condition of your map:\n")
 
         player2_board.own_Condition()
-
+        print(player1_board.shipList.items())
         player2_board.shipNum += 1
 
         if player2_board.shipNum == 2:
@@ -243,6 +243,9 @@ print("Let's start the game!")
 while True:
     print(f"{player1_name}'s turn.")
     player1_board.bomb_ship(player2_board)
+    print(player2_board.shipList.items())
+    
+    player2_board.sink_Evaluation()
 
     # Check if player 1 has won
     if not player2_board.shipList:
@@ -254,6 +257,9 @@ while True:
 
     print(f"{player2_name}'s turn.")
     player2_board.bomb_ship(player1_board)
+    print(list(player1_board.shipList.items()))
+    
+    player1_board.sink_Evaluation()
 
     # Check if player 2 has won
     if not player1_board.shipList:
