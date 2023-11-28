@@ -194,7 +194,6 @@ while player1_set == False:
         print("Following is the current condition of your map:\n")
 
         player1_board.own_Condition()
-        print(player1_board.shipList.items())
         player1_board.shipNum += 1
 
         if player1_board.shipNum == 2:
@@ -225,7 +224,6 @@ while player2_set == False:
         print("Following is the current condition of your map:\n")
 
         player2_board.own_Condition()
-        print(player1_board.shipList.items())
         player2_board.shipNum += 1
 
         if player2_board.shipNum == 2:
@@ -243,7 +241,6 @@ print("Let's start the game!")
 while True:
     print(f"{player1_name}'s turn.")
     player1_board.bomb_ship(player2_board)
-    print(player2_board.shipList.items())
     
     player2_board.sink_Evaluation()
 
@@ -257,7 +254,6 @@ while True:
 
     print(f"{player2_name}'s turn.")
     player2_board.bomb_ship(player1_board)
-    print(list(player1_board.shipList.items()))
     
     player1_board.sink_Evaluation()
 
