@@ -12,28 +12,28 @@ class Board:
     def coord_to_index(self, coordination):
         # Convert coordinate string to row and column indices.
         # Check the length of the coordination input.
-        if len(coordination) != 2:
+        if len(coordination) < 2 or len(coordination) > 3:
             raise ValueError(
                 "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
         # Check if input falls in 1-9, A-J limit.
-        elif int(ord(coordination[1])) < 65 or int(ord(coordination[1])) > 74 or int(coordination[0]) < 1 or int(coordination[0]) > 10:
+        elif int(ord(coordination[-1])) < 65 or int(ord(coordination[-1])) > 74 or int(coordination[:-1]) < 1 or int(coordination[:-1]) > 10:
             raise ValueError(
-                "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+                "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.jg")
         else:
-            col = ord(coordination[1]) - ord('A')
-            row = int(coordination[0]) - 1
+            col = ord(coordination[-1]) - ord('A')
+            row = int(coordination[:-1]) - 1
             return row, col
 
     # Added parameter "name" to send info to shipList
-    def add_ship(self, name, length, coordination, direction):
+    def add_ship(self, name, shipLength, coordination, direction):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
         row, col = self.coord_to_index(coordination)
         if direction.lower() == 'horizontal':  # if the ship is horizontal
-            if col + length > 10:   # to judge if it is out of bound
+            if col + shipLength > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
-            for i in range(length):
+            for i in range(shipLength):
                 if self.state[row][col + i] == 'X':  # to judge if it is overlap
                     raise ValueError("Ships cannot overlap")
                 self.state[row][col + i] = 'X'
@@ -42,9 +42,9 @@ class Board:
                 self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))
 
         elif direction.lower() == 'vertical':  # if the ship is vertical
-            if row + length > 10:
+            if row + shipLength > 10:
                 raise ValueError("Ship out of bounds")
-            for i in range(length):
+            for i in range(shipLength):
                 if self.state[row + i][col] == 'X':
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
@@ -200,14 +200,19 @@ while player1_set == False:
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
     try:
+        direction = input(
+            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+        # Validate direction
+        if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
+            raise ValueError(
+                "Invalid direction. Must be 'horizontal' or 'vertical'")
+
         loc = input(
             f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
         # Validate coordinates here
         player1_board.coord_to_index(loc)
 
-        direction = input(
-            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-
+        # Now call add_ship after validation
         player1_board.add_ship(shipName, shipLength, loc, direction)
         print(f'\n{shipName} successfully added.\n')
         print("Following is the current condition of your map:\n")
@@ -233,11 +238,16 @@ while player2_set == False:
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
     try:
-
-        loc = input(
-            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
         direction = input(
             'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+        if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
+            raise ValueError(
+                "Invalid direction. Must be 'horizontal' or 'vertical'")
+        loc = input(
+            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
+        # Validate coordinates here
+        player2_board.coord_to_index(loc)
+
         player2_board.add_ship(shipName, shipLength, loc, direction)
         print(f'\n{shipName} successfully added.\n')
         print("Following is the current condition of your map:\n")
