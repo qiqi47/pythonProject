@@ -5,12 +5,7 @@ class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
         self.state = [[' ']*10 for x in range(10)]
-        self.shipList = {"battleship": ['', '', '', '', ''],
-                         "cruiser1": ['', '', ''],
-                         "cruiser2": ['', '', ''],
-                         "destroyer1": ['', ''],
-                         "destroyer2": ['', ''],
-                         }
+        self.shipList = {"destroyer1": ['', ''],"destroyer2": ['', '']}
         # Keep track of number of ship on board
         self.shipNum = 0
 
@@ -202,7 +197,7 @@ while player1_set == False:
 
         player1_board.shipNum += 1
 
-        if player1_board.shipNum == 5:
+        if player1_board.shipNum == 2:
             player1_set = True
 
     except ValueError as msg:
@@ -233,11 +228,17 @@ while player2_set == False:
 
         player2_board.shipNum += 1
 
-        if player2_board.shipNum == 5:
+        if player2_board.shipNum == 2:
             player2_set = True
 
     except ValueError as msg:
         print(msg)
+        
+input(f'{player2_name} completed the setting. Press enter to clear screen and hand the terminal to {player1_name}.')
+
+# Clear screen. Should work well in terminal (not tested yet). Another idea is to print multiple empty lines.
+os.system('clear')
+print("Let's start the game!")
 
 while True:
     print(f"{player1_name}'s turn.")
