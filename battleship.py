@@ -39,7 +39,7 @@ class Board:
                 self.state[row][col + i] = 'X'
 
                 # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))
+                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))    
 
         elif direction.lower() == 'vertical':  # if the ship is vertical
             if row + shipLength > 10:
@@ -48,8 +48,10 @@ class Board:
                 if self.state[row + i][col] == 'X':
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
+                
                 # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))
+                self.shipList[name][i] = (str(row+i+1) + chr(col + 65))
+                
         else:
             raise ValueError("Invalid direction")
         return
@@ -91,8 +93,7 @@ class Board:
         for ship_key, ship_value in self.shipList.items():
             # If the list is empty after attack, that means the ship sunk.
             if ship_value == []:
-                print(
-                    f'Opponent {ship_key} sunk. Inform the opponent about it.\n')
+                print(f'Opponent {ship_key} sunk. Inform the opponent about it.\n')
                 # Delete sunk ship from the shipList
                 del self.shipList[ship_key]
                 break
@@ -168,13 +169,6 @@ class Board:
         while True:
             try:
                 self.bomb_Dashboard(opponent_board)
-                # # Display own map
-                # print("\nYour board:")
-                # ownMap = self.own_Condition()
-
-                # # Display opponent's map
-                # print("Opponent's board:")
-                # opponentMap = opponent_board.opponent_Condition()
             
                 coord = input("Enter coordinates to bomb (e.g., 1A): ")
                 result = opponent_board.evaluate(coord)
