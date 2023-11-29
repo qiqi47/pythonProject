@@ -1,6 +1,5 @@
 import os
 
-
 class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
@@ -9,28 +8,45 @@ class Board:
         # Keep track of number of ship on board
         self.shipNum = 0
 
-    def coord_to_index(self, coordination):
+    def coord_to_index(self, command):
+        # Convert coordinate string to row and column indices.
+        # Check the length of the coordination input.
+        if len(command) < 3 or len(command) > 4:
+            raise ValueError(
+                "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J + direction flag (v or h).")
+        coordination = command[:-1]
+        flag = command[-1]
+        
+        if flag != "v" and flag != "h":
+            raise ValueError("Invalid direction flag. Should be v or h.")
+        # Check if input falls in 1-9, A-J limit.
+        if int(ord(coordination[-1])) < 65 or int(ord(coordination[-1])) > 74 or int(coordination[:-1]) < 1 or int(coordination[:-1]) > 10:
+            raise ValueError("Invalid coordination. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+        else:
+            col = ord(coordination[-1]) - ord('A')
+            row = int(coordination[:-1]) - 1
+            return row, col, flag
+        
+    def bomb_coord_to_index(self, coordination):
         # Convert coordinate string to row and column indices.
         # Check the length of the coordination input.
         if len(coordination) < 2 or len(coordination) > 3:
             raise ValueError(
                 "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
-        # Check if input falls in 1-9, A-J limit.
-        elif int(ord(coordination[-1])) < 65 or int(ord(coordination[-1])) > 74 or int(coordination[:-1]) < 1 or int(coordination[:-1]) > 10:
-            raise ValueError(
-                "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.jg")
+        if int(ord(coordination[-1])) < 65 or int(ord(coordination[-1])) > 74 or int(coordination[:-1]) < 1 or int(coordination[:-1]) > 10:
+            raise ValueError("Invalid coordination. Should be a combination of a number from 1-10 and an alphabet from A-J.jg")
         else:
             col = ord(coordination[-1]) - ord('A')
             row = int(coordination[:-1]) - 1
             return row, col
 
     # Added parameter "name" to send info to shipList
-    def add_ship(self, name, shipLength, coordination, direction):
+    def add_ship(self, name, shipLength, command):
         """Add a ship to the board according to the coordination and direction.
         Throw an error if it is out of bound."""
         # Implement the logic to add a ship to the board.
-        row, col = self.coord_to_index(coordination)
-        if direction.lower() == 'horizontal':  # if the ship is horizontal
+        row, col, flag = self.coord_to_index(command)
+        if flag == 'h':  # if the ship is horizontal
             if col + shipLength > 10:   # to judge if it is out of bound
                 raise ValueError("Ship out of bounds")
             for i in range(shipLength):
@@ -41,7 +57,7 @@ class Board:
                 # Adding coordination information to shipList in each iteration.
                 self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))    
 
-        elif direction.lower() == 'vertical':  # if the ship is vertical
+        elif flag == 'v':  # if the ship is vertical
             if row + shipLength > 10:
                 raise ValueError("Ship out of bounds")
             for i in range(shipLength):
@@ -52,15 +68,15 @@ class Board:
                 # Adding coordination information to shipList in each iteration.
                 self.shipList[name][i] = (str(row+i+1) + chr(col + 65))
                 
-        else:
-            raise ValueError("Invalid direction")
+        # else:
+        #     raise ValueError("Invalid direction")
         return
 
     def evaluate(self, coordination):
         """Check if the bomb hit or failed, and reflect the condition to shipList. 
         Intact ship is "X" and Intact """
         # Implement the logic to check if the opponent's bombardment hit or failed.
-        row, col = self.coord_to_index(coordination)
+        row, col = self.bomb_coord_to_index(coordination)
 
         if self.state[row][col] == "@" or self.state[row][col] == "V":
             raise ValueError("You can't bomb same place again")
@@ -169,7 +185,6 @@ class Board:
         while True:
             try:
                 self.bomb_Dashboard(opponent_board)
-            
                 coord = input("Enter coordinates to bomb (e.g., 1A): ")
                 result = opponent_board.evaluate(coord)
                 print(result)
@@ -203,20 +218,18 @@ while player1_set == False:
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
     try:
-        direction = input(
-            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+        # direction = input('Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
         # Validate direction
-        if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
-            raise ValueError(
-                "Invalid direction. Must be 'horizontal' or 'vertical'")
+        # if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
+        #     raise ValueError(
+        #         "Invalid direction. Must be 'horizontal' or 'vertical'")
 
-        loc = input(
-            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-        # Validate coordinates here
-        player1_board.coord_to_index(loc)
+        command = input(f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
+        # Validate coordinates here <- I think not needed. It will be invoked in add ship anyway.
+        # player1_board.coord_to_index(command)
 
         # Now call add_ship after validation
-        player1_board.add_ship(shipName, shipLength, loc, direction)
+        player1_board.add_ship(shipName, shipLength, command)
         print(f'\n{shipName} successfully added.\n')
         print("Following is the current condition of your map:\n")
 
@@ -241,17 +254,16 @@ while player2_set == False:
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
     try:
-        direction = input(
-            'Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-        if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
-            raise ValueError(
-                "Invalid direction. Must be 'horizontal' or 'vertical'")
-        loc = input(
-            f'''Input the coordination for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\n''')
-        # Validate coordinates here
-        player2_board.coord_to_index(loc)
+        # direction = input('Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
+        # if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
+        #     raise ValueError(
+        #         "Invalid direction. Must be 'horizontal' or 'vertical'")
+        command = input(f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
 
-        player2_board.add_ship(shipName, shipLength, loc, direction)
+        #Same as above
+        # player2_board.coord_to_index(loc)
+
+        player2_board.add_ship(shipName, shipLength, command)
         print(f'\n{shipName} successfully added.\n')
         print("Following is the current condition of your map:\n")
 
