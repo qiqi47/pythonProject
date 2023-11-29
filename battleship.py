@@ -1,5 +1,6 @@
 import os
 
+
 class Board:
     def __init__(self):
         # This initialize board state and shipList for each instance.
@@ -16,17 +17,18 @@ class Board:
                 "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J + direction flag (v or h).")
         coordination = command[:-1]
         flag = command[-1]
-        
+
         if flag != "v" and flag != "h":
             raise ValueError("Invalid direction flag. Should be v or h.")
         # Check if input falls in 1-9, A-J limit.
         if int(ord(coordination[-1])) < 65 or int(ord(coordination[-1])) > 74 or int(coordination[:-1]) < 1 or int(coordination[:-1]) > 10:
-            raise ValueError("Invalid coordination. Should be a combination of a number from 1-10 and an alphabet from A-J.")
+            raise ValueError(
+                "Invalid coordination. Should be a combination of a number from 1-10 and an alphabet from A-J.")
         else:
             col = ord(coordination[-1]) - ord('A')
             row = int(coordination[:-1]) - 1
             return row, col, flag
-        
+
     def bomb_coord_to_index(self, coordination):
         # Convert coordinate string to row and column indices.
         # Check the length of the coordination input.
@@ -34,7 +36,8 @@ class Board:
             raise ValueError(
                 "Invalid input. Should be a combination of a number from 1-10 and an alphabet from A-J.")
         if int(ord(coordination[-1])) < 65 or int(ord(coordination[-1])) > 74 or int(coordination[:-1]) < 1 or int(coordination[:-1]) > 10:
-            raise ValueError("Invalid coordination. Should be a combination of a number from 1-10 and an alphabet from A-J.jg")
+            raise ValueError(
+                "Invalid coordination. Should be a combination of a number from 1-10 and an alphabet from A-J.jg")
         else:
             col = ord(coordination[-1]) - ord('A')
             row = int(coordination[:-1]) - 1
@@ -52,10 +55,10 @@ class Board:
             for i in range(shipLength):
                 if self.state[row][col + i] == 'X':  # to judge if it is overlap
                     raise ValueError("Ships cannot overlap")
+            # If no overlap, add the ship to the board
+            for i in range(shipLength):
                 self.state[row][col + i] = 'X'
-
-                # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))    
+                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))
 
         elif flag == 'v':  # if the ship is vertical
             if row + shipLength > 10:
@@ -63,11 +66,11 @@ class Board:
             for i in range(shipLength):
                 if self.state[row + i][col] == 'X':
                     raise ValueError("Ships cannot overlap")
+             # If no overlap, add the ship to the board
+            for i in range(shipLength):
                 self.state[row + i][col] = 'X'
-                
-                # Adding coordination information to shipList in each iteration.
                 self.shipList[name][i] = (str(row+i+1) + chr(col + 65))
-                
+
         # else:
         #     raise ValueError("Invalid direction")
         return
@@ -109,7 +112,8 @@ class Board:
         for ship_key, ship_value in self.shipList.items():
             # If the list is empty after attack, that means the ship sunk.
             if ship_value == []:
-                print(f'Opponent {ship_key} sunk. Inform the opponent about it.\n')
+                print(
+                    f'Opponent {ship_key} sunk. Inform the opponent about it.\n')
                 # Delete sunk ship from the shipList
                 del self.shipList[ship_key]
                 break
@@ -143,7 +147,7 @@ class Board:
 
         print(board_map)
         return
-    
+
     def bomb_Dashboard(self, opponent_board):
         """This method visualizes location of your hit / not hit"""
         board_map = "Opponent's map           Own map \n   A B C D E F G H I J      A B C D E F G H I J\n"
@@ -158,14 +162,16 @@ class Board:
                         row += "V"
                     else:
                         row += ' '
-                
+
                 elif j == 10:
                     if i+1 < 10:
-                        row = str(i+1) + " |" + "|".join(row) + "|  " + str(i+1)+ " |"
+                        row = str(i+1) + " |" + "|".join(row) + \
+                            "|  " + str(i+1) + " |"
                     else:
-                        row = str(i+1) + "|" + "|".join(row) + "|  " + str(i+1) + "|"
+                        row = str(i+1) + "|" + "|".join(row) + \
+                            "|  " + str(i+1) + "|"
                 else:
-                # Copy location of ship not bombed
+                    # Copy location of ship not bombed
                     if self.state[i][j-11] == "X":
                         row += "X|"
                     elif self.state[i][j-11] == "@":
@@ -174,11 +180,10 @@ class Board:
                         row += "V|"
                     else:
                         row += ' |'
-            
-            board_map += row +"\n"            
-    
-        print(board_map)
 
+            board_map += row + "\n"
+
+        print(board_map)
 
     def bomb_ship(self, opponent_board):
         """Take input from the player for bombing and update the board."""
@@ -188,7 +193,7 @@ class Board:
                 coord = input("Enter coordinates to bomb (e.g., 1A): ")
                 result = opponent_board.evaluate(coord)
                 print(result)
-            
+
                 if result == 'hit':
                     self.sink_Evaluation()
                 self.bomb_Dashboard(opponent_board)
@@ -196,6 +201,7 @@ class Board:
                 break
             except ValueError as msg:
                 print(msg)
+
 
 # Get the name of the players
 player1_name = input("Player 1 Name: ")
@@ -224,7 +230,10 @@ while player1_set == False:
         #     raise ValueError(
         #         "Invalid direction. Must be 'horizontal' or 'vertical'")
 
-        command = input(f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
+        # Display the current state of the board before adding the ship
+        player1_board.own_Condition()
+        command = input(
+            f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
         # Validate coordinates here <- I think not needed. It will be invoked in add ship anyway.
         # player1_board.coord_to_index(command)
 
@@ -258,9 +267,13 @@ while player2_set == False:
         # if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
         #     raise ValueError(
         #         "Invalid direction. Must be 'horizontal' or 'vertical'")
-        command = input(f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
 
-        #Same as above
+        # Display the current state of the board before adding the ship
+        player1_board.own_Condition()
+        command = input(
+            f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
+
+        # Same as above
         # player2_board.coord_to_index(loc)
 
         player2_board.add_ship(shipName, shipLength, command)
