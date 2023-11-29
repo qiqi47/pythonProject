@@ -49,7 +49,7 @@ class Board:
                     raise ValueError("Ships cannot overlap")
                 self.state[row + i][col] = 'X'
                 # Adding coordination information to shipList in each iteration.
-                self.shipList[name][i] = (str(row + 1 + i) + str(chr(col)))
+                self.shipList[name][i] = (str(row+1) + chr(col + 65 + i))
         else:
             raise ValueError("Invalid direction")
         return
