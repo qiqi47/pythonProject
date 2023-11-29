@@ -73,12 +73,12 @@ class Board:
                 Only empty list will remain if all part of a ship is hit."""
                 if coordination in location:
                     location.remove(coordination)
-            return 'hit'
+            return 'hit!!\n'
 
         else:
             # Mark the cell with "V" as miss. "V" because it looks like water splash.
             self.state[row][col] = "V"
-            return 'miss'
+            return 'miss...\n'
 
         # if (row, col) in self.shipList:
             # self.shipList[(row, col)] = 'hit'
@@ -92,7 +92,7 @@ class Board:
             # If the list is empty after attack, that means the ship sunk.
             if ship_value == []:
                 print(
-                    f'Opponent {ship_key} sunk. Inform the opponent about it.')
+                    f'Opponent {ship_key} sunk. Inform the opponent about it.\n')
                 # Delete sunk ship from the shipList
                 del self.shipList[ship_key]
                 break
@@ -126,58 +126,67 @@ class Board:
 
         print(board_map)
         return
-
-    def opponent_Condition(self):
+    
+    def bomb_Dashboard(self, opponent_board):
         """This method visualizes location of your hit / not hit"""
-
-        board_map = "  A B C D E F G H I J\n"
+        board_map = "Opponent's map           Own map \n   A B C D E F G H I J      A B C D E F G H I J\n"
         for i in range(10):
             row = ""
-            for j in range(10):
-                if self.state[i][j] == "@":
-                    row += "@"
-                elif self.state[i][j] == "V":
-                    row += "V"
+            for j in range(21):
+                if j < 10:
+                    # Copy location of ship not bombed
+                    if opponent_board.state[i][j] == "@":
+                        row += "@"
+                    elif opponent_board.state[i][j] == "V":
+                        row += "V"
+                    else:
+                        row += ' '
+                
+                elif j == 10:
+                    if i+1 < 10:
+                        row = str(i+1) + " |" + "|".join(row) + "|  " + str(i+1)+ " |"
+                    else:
+                        row = str(i+1) + "|" + "|".join(row) + "|  " + str(i+1) + "|"
                 else:
-                    row += ' '
-            # Adding row number, separator and append to board_map
-
-            if i+1 < 10:
-                board_map += str(i+1) + " |" + "|".join(row) + "|\n"
-            else:
-                board_map += str(i+1) + "|" + "|".join(row) + "|\n"
-
+                # Copy location of ship not bombed
+                    if self.state[i][j-11] == "X":
+                        row += "X|"
+                    elif self.state[i][j-11] == "@":
+                        row += "@|"
+                    elif self.state[i][j-11] == "V":
+                        row += "V|"
+                    else:
+                        row += ' |'
+            
+            board_map += row +"\n"            
+    
         print(board_map)
-        return
+
 
     def bomb_ship(self, opponent_board):
         """Take input from the player for bombing and update the board."""
         while True:
             try:
-                # Display own map
-                print("\nYour board:")
-                self.own_Condition()
+                self.bomb_Dashboard(opponent_board)
+                # # Display own map
+                # print("\nYour board:")
+                # ownMap = self.own_Condition()
 
-                # Display opponent's map
-                print("Opponent's board:")
-                opponent_board.opponent_Condition()
-
+                # # Display opponent's map
+                # print("Opponent's board:")
+                # opponentMap = opponent_board.opponent_Condition()
+            
                 coord = input("Enter coordinates to bomb (e.g., 1A): ")
                 result = opponent_board.evaluate(coord)
                 print(result)
-
+            
                 if result == 'hit':
                     self.sink_Evaluation()
-                print("Your board:")
-                self.own_Condition()
+                self.bomb_Dashboard(opponent_board)
 
-                # Print the opponent's board condition
-                print("Opponent's board:")
-                opponent_board.opponent_Condition()
                 break
             except ValueError as msg:
                 print(msg)
-
 
 # Get the name of the players
 player1_name = input("Player 1 Name: ")
