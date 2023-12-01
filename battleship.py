@@ -71,8 +71,6 @@ class Board:
                 self.state[row + i][col] = 'X'
                 self.shipList[name][i] = (str(row+i+1) + chr(col + 65))
 
-        # else:
-        #     raise ValueError("Invalid direction")
         return
 
     def evaluate(self, coordination):
