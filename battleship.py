@@ -3,14 +3,14 @@ import os
 
 class Board:
     def __init__(self):
-        # This initialize board state and shipList for each instance.
+        """This initialize board state and shipList for each instance."""
         self.state = [[' ']*10 for x in range(10)]
-        self.shipList = {"destroyer1": ['', ''], "destroyer2": ['', '']}
+        self.shipList = {"battleship":['','','','',''],"cruiser1":['','',''],"cruiser2":['','',''],"destroyer1": ['', ''], "destroyer2": ['', '']}
         # Keep track of number of ship on board
         self.shipNum = 0
 
     def coord_to_index(self, command):
-        # Convert coordinate string to row and column indices.
+        """Convert coordinate string to row and column indices. For placing ship purpose"""
         # Check the length of the coordination input.
         if len(command) < 3 or len(command) > 4:
             raise ValueError(
@@ -30,7 +30,7 @@ class Board:
             return row, col, flag
 
     def bomb_coord_to_index(self, coordination):
-        # Convert coordinate string to row and column indices.
+        """Convert coordinate string to row and column indices. For bombing purpose"""
         # Check the length of the coordination input.
         if len(coordination) < 2 or len(coordination) > 3:
             raise ValueError(
@@ -90,8 +90,7 @@ class Board:
 
             # Record hit in shipList
             for location in self.shipList.values():
-                """check each list and remove hit coordination. 
-                Only empty list will remain if all part of a ship is hit."""
+                #check each list and remove hit coordination. Only empty list will remain if all part of a ship is hit.
                 if coordination in location:
                     location.remove(coordination)
             return 'hit!!\n'
@@ -101,13 +100,8 @@ class Board:
             self.state[row][col] = "V"
             return 'miss...\n'
 
-        # if (row, col) in self.shipList:
-            # self.shipList[(row, col)] = 'hit'
-            # return 'hit'
-        # else:
-            # return 'miss'
-
     def sink_Evaluation(self):
+        """This evaluates if certain ship in shipList is sunk."""
         # check each ship of shipList dictionary
         for ship_key, ship_value in self.shipList.items():
             # If the list is empty after attack, that means the ship sunk.
@@ -122,7 +116,6 @@ class Board:
     def own_Condition(self):
         """This method visualizes location of your ships and their conditions. Hit is
         '@', and miss is 'V'. """
-
         board_map = "   A B C D E F G H I J\n"
         # Double for loop, but limited to 100 checks. No issue.
         for i in range(10):
@@ -201,6 +194,10 @@ class Board:
                 break
             except ValueError as msg:
                 print(msg)
+ 
+#Global function to clear screen. Work on both Mac and PC                
+def cls():
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 # Get the name of the players
@@ -224,18 +221,10 @@ while player1_set == False:
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
     try:
-        # direction = input('Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-        # Validate direction
-        # if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
-        #     raise ValueError(
-        #         "Invalid direction. Must be 'horizontal' or 'vertical'")
-
         # Display the current state of the board before adding the ship
         player1_board.own_Condition()
         command = input(
             f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
-        # Validate coordinates here <- I think not needed. It will be invoked in add ship anyway.
-        # player1_board.coord_to_index(command)
 
         # Now call add_ship after validation
         player1_board.add_ship(shipName, shipLength, command)
@@ -245,7 +234,7 @@ while player1_set == False:
         player1_board.own_Condition()
         player1_board.shipNum += 1
 
-        if player1_board.shipNum == 2:
+        if player1_board.shipNum == 5:
             player1_set = True
 
     except ValueError as msg:
@@ -253,8 +242,8 @@ while player1_set == False:
 
 input(f'{player1_name} completed the setting. Press enter to clear screen and hand the terminal to {player2_name}.')
 
-# Clear screen. Should work well in terminal (not tested yet). Another idea is to print multiple empty lines.
-os.system('clear')
+# Clear screen.
+cls()
 
 while player2_set == False:
     shipName = list(player2_board.shipList)[player2_board.shipNum]
@@ -263,18 +252,10 @@ while player2_set == False:
     print(f'\nPlace your {shipName}. Length is {shipLength}.\n')
 
     try:
-        # direction = input('Input which direction you would like to stretch your ship (option: vertical or horizontal).\n')
-        # if direction.lower() != 'horizontal' and direction.lower() != 'vertical':
-        #     raise ValueError(
-        #         "Invalid direction. Must be 'horizontal' or 'vertical'")
-
-        # Display the current state of the board before adding the ship
-        player1_board.own_Condition()
+     # Display the current state of the board before adding the ship
+        player2_board.own_Condition()
         command = input(
             f'''Input the coordination and direction flag for the left edge of your {shipName}.\nCoordination should be a combination of a number from 1-10 and an alphabet from A-J (Ex. 1A).\nDirection flag states if the ship is placed vertical (v) or horizontal (h).\nInput should be like "1Av".\n''')
-
-        # Same as above
-        # player2_board.coord_to_index(loc)
 
         player2_board.add_ship(shipName, shipLength, command)
         print(f'\n{shipName} successfully added.\n')
@@ -283,15 +264,17 @@ while player2_set == False:
         player2_board.own_Condition()
         player2_board.shipNum += 1
 
-        if player2_board.shipNum == 2:
+        if player2_board.shipNum == 5:
             player2_set = True
 
     except ValueError as msg:
         print(msg)
+        
 input(f'{player2_name} completed the setting. Press enter to clear screen and hand the terminal to {player1_name}.')
 
-# Clear screen. Should work well in terminal (not tested yet). Another idea is to print multiple empty lines.
-os.system('clear')
+# Clear screen. 
+cls()
+
 print("Let's start the game!")
 
 while True:
@@ -305,7 +288,7 @@ while True:
         break
 
     input("Press enter to clear the screen and hand the terminal to Player 2.")
-    os.system('clear')
+    cls()
 
     print(f"{player2_name}'s turn.")
     player2_board.bomb_ship(player1_board)
@@ -317,4 +300,5 @@ while True:
         break
 
     input("Press enter to clear the screen and hand the terminal to Player 1.")
-    os.system('clear')
+    
+    cls()
